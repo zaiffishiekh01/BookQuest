@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommender System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #131D4F;
+            --secondary: #254D70;
+            --accent: #954C2E;
+            --light: #EFE4D2;
+        }
+        
+        body {
+            background-color: var(--light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background-color: var(--primary) !important;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand, .nav-link {
+            color: var(--light) !important;
+            font-weight: 600;
+        }
+        .nav-link:hover {
+            color: var(--accent) !important;
+        }
+        .page-title {
+            color: var(--primary);
+            font-weight: 700;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        .row.g-4 {
+            /* Ensure all columns stretch equally */
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .col-md-3 {
+            display: flex;
+            align-items: stretch;
+        }
+        .book-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border: 1px solid var(--light);
+            display: flex;
+            flex-direction: column;
+            height: 430px; /* Fixed height for all cards */
+            width: 100%;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .book-image {
+            width: 100%;
+            height: 200px; /* Fixed image height */
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .book-info {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+            min-height: 0;
+        }
+        .book-title {
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            min-height: 2.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .book-author {
+            color: var(--secondary);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .book-details {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        .rating-badge {
+            background-color: var(--secondary);
+            color: var(--light);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+        .votes-badge {
+            background-color: var(--accent);
+            color: var(--light);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 0.5rem;
+            margin-left: 0.5rem;
+        }
+        @media (max-width: 991px) {
+            .book-card { height: 470px; }
+        }
+        @media (max-width: 767px) {
+            .book-card { height: 500px; }
+        }
+        @media (max-width: 575px) {
+            .book-card { height: auto; min-height: 420px; }
+            .book-image { height: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-book-reader me-2"></i>Book Recommender
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recommend"><i class="fas fa-magic me-1"></i>Recommend</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact"><i class="fas fa-envelope me-1"></i>Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <h1 class="page-title">Top 50 Books</h1>
+        <div class="row g-4 d-flex align-items-stretch">
+            {% for i in range(book_name|length): %}
+                <div class="col-md-3 d-flex align-items-stretch">
+                    <div class="book-card">
+                        <img src="{{ image[i] }}" class="book-image" alt="{{ book_name[i] }}">
+                        <div class="book-info">
+                            <div>
+                                <h2 class="book-title">{{ book_name[i] }}</h2>
+                                <p class="book-author"><i class="fas fa-user me-2"></i>{{ author[i] }}</p>
+                                <p class="book-details"><i class="fas fa-calendar me-2"></i>{{ release_year[i] }}</p>
+                                <p class="book-details"><i class="fas fa-building me-2"></i>{{ publisher[i] }}</p>
+                            </div>
+                            <div class="mt-2">
+                                <span class="rating-badge"><i class="fas fa-star me-1"></i>{{ '%.1f' % rating[i] }}</span>
+                                <span class="votes-badge"><i class="fas fa-users me-1"></i>{{ votes[i] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
