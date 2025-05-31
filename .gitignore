@@ -48,7 +48,6 @@ log/
 *.sqlite3
 
 # Model files
-*.pkl
 *.model
 *.h5
 
