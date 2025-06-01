@@ -9,13 +9,18 @@ from io import BytesIO
 # Load environment variables
 load_dotenv()
 
+# Use /tmp directory for file storage
+DATA_DIR = '/tmp/bookquest_data'
+os.makedirs(DATA_DIR, exist_ok=True)
+
 def load_pickle_from_url(url, local_filename):
-    if os.path.exists(local_filename):
-        with open(local_filename, 'rb') as f:
+    local_path = os.path.join(DATA_DIR, local_filename)
+    if os.path.exists(local_path):
+        with open(local_path, 'rb') as f:
             return pickle.load(f)
     response = requests.get(url)
     response.raise_for_status()
-    with open(local_filename, 'wb') as f:
+    with open(local_path, 'wb') as f:
         f.write(response.content)
     return pickle.load(BytesIO(response.content))
 

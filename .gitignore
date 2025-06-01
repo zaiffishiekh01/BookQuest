@@ -77,3 +77,9 @@ coverage.xml
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
+# Data directory
+data/
+
+# OS
+Thumbs.db

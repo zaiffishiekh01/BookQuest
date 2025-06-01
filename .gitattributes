@@ -33,3 +33,7 @@ saved_model/**/* filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 *.zst filter=lfs diff=lfs merge=lfs -text
 *tfevents* filter=lfs diff=lfs merge=lfs -text
+public/Book_recommendations(1).png filter=lfs diff=lfs merge=lfs -text
+public/Book_recommendations(2).png filter=lfs diff=lfs merge=lfs -text
+public/contact_us(2).png filter=lfs diff=lfs merge=lfs -text
+public/Top_50_Books.png filter=lfs diff=lfs merge=lfs -text
