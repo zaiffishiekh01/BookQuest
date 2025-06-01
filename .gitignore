@@ -4,6 +4,13 @@ env/
 ENV/
 .env
 
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
 # Python cache files
 __pycache__/
 *.py[cod]
@@ -42,12 +49,13 @@ wheels/
 *.log
 logs/
 log/
-
+          
 # Database
 *.db
 *.sqlite3
 
 # Model files
+*.pkl
 *.model
 *.h5
 
