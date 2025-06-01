@@ -70,6 +70,14 @@
             background-color: #7a3d25;
             transform: translateY(-2px);
         }
+        .row.g-4 {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .col-md-3 {
+            display: flex;
+            align-items: stretch;
+        }
         .book-card {
             background: white;
             border-radius: 10px;
@@ -78,6 +86,10 @@
             margin-bottom: 2rem;
             overflow: hidden;
             border: 1px solid var(--light);
+            display: flex;
+            flex-direction: column;
+            height: 430px;
+            width: 100%;
         }
         .book-card:hover {
             transform: translateY(-5px);
@@ -85,11 +97,17 @@
         }
         .book-image {
             width: 100%;
-            height: 300px;
+            height: 200px;
             object-fit: cover;
+            flex-shrink: 0;
         }
         .book-info {
-            padding: 1.5rem;
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+            min-height: 0;
         }
         .book-title {
             color: var(--primary);
@@ -114,13 +132,25 @@
             margin: 2rem 0;
             text-align: center;
         }
+        @media (max-width: 991px) {
+            .book-card { height: 470px; }
+        }
+        @media (max-width: 767px) {
+            .book-card { height: 500px; }
+        }
+        @media (max-width: 575px) {
+            .book-card { height: auto; min-height: 420px; }
+            .book-image { height: 180px; }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-book-reader me-2"></i>Book Recommender
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fas fa-book-reader me-2"></i>
+                <span style="color: #fff; font-weight: 700; font-size: 1.3rem;">BookQuest</span>
+                <span style="color: #954C2E; font-size: 0.95rem; font-weight: 500; margin-left: 0.5rem;">Adventure in finding great reads</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -161,9 +191,9 @@
 
         {% if data %}
             <h2 class="recommendation-title">Recommended Books</h2>
-            <div class="row">
+            <div class="row g-4 d-flex align-items-stretch">
                 {% for i in data %}
-                    <div class="col-md-3">
+                    <div class="col-md-3 d-flex align-items-stretch">
                         <div class="book-card">
                             <img src="{{ i[5] }}" class="book-image" alt="{{ i[1] }}">
                             <div class="book-info">

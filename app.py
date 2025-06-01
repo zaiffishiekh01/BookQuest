@@ -1,14 +1,41 @@
 from flask import Flask,render_template,request, flash, redirect, url_for
 import pickle
 import numpy as np
+import os
+from dotenv import load_dotenv
+import requests
+from io import BytesIO
 
-popular_df = pickle.load(open('popular.pkl','rb'))
-pt = pickle.load(open('pt.pkl','rb'))
-books = pickle.load(open('books.pkl','rb'))
-similarity_scores = pickle.load(open('similarity_scores.pkl','rb'))
+# Load environment variables
+load_dotenv()
+
+def load_pickle_from_url(url, local_filename):
+    if os.path.exists(local_filename):
+        with open(local_filename, 'rb') as f:
+            return pickle.load(f)
+    response = requests.get(url)
+    response.raise_for_status()
+    with open(local_filename, 'wb') as f:
+        f.write(response.content)
+    return pickle.load(BytesIO(response.content))
+
+POPULAR_URL = "https://huggingface.co/zaiffi/BookQuest/resolve/main/popular.pkl"
+PT_URL = "https://huggingface.co/zaiffi/BookQuest/resolve/main/pt.pkl"
+BOOKS_URL = "https://huggingface.co/zaiffi/BookQuest/resolve/main/books.pkl"
+SIMILARITY_URL = "https://huggingface.co/zaiffi/BookQuest/resolve/main/similarity_scores.pkl"
+
+popular_df = load_pickle_from_url(POPULAR_URL, "popular.pkl")
+pt = load_pickle_from_url(PT_URL, "pt.pkl")
+books = load_pickle_from_url(BOOKS_URL, "books.pkl")
+similarity_scores = load_pickle_from_url(SIMILARITY_URL, "similarity_scores.pkl")
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Required for flash messages
+app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-here')
+
+# EmailJS Configuration
+app.config['EMAILJS_PUBLIC_KEY'] = os.getenv('VITE_EMAILJS_PUBLIC_KEY')
+app.config['EMAILJS_SERVICE_ID'] = os.getenv('VITE_EMAILJS_SERVICE_ID')
+app.config['EMAILJS_TEMPLATE_ID'] = os.getenv('VITE_EMAILJS_TEMPLATE_ID')
 
 @app.route("/")
 def index():

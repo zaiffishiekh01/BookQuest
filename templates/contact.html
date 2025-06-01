@@ -6,6 +6,9 @@
     <title>Contact Us - Book Recommender System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <style>
         :root {
             --primary: #131D4F;
@@ -91,6 +94,17 @@
             background-color: #7a3d25;
             transform: translateY(-2px);
         }
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .loading-spinner {
+            display: none;
+            margin-right: 8px;
+        }
+        .submit-btn.loading .loading-spinner {
+            display: inline-block;
+        }
         .social-links {
             display: flex;
             justify-content: center;
@@ -144,8 +158,10 @@
 <body>
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-book-reader me-2"></i>Book Recommender
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fas fa-book-reader me-2"></i>
+                <span style="color: #fff; font-weight: 700; font-size: 1.3rem;">BookQuest</span>
+                <span style="color: #954C2E; font-size: 0.95rem; font-weight: 500; margin-left: 0.5rem;">Adventure in finding great reads</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -216,20 +232,23 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <form action="/contact" method="POST">
+                    <form id="contact-form" onsubmit="return handleSubmit(event)">
                         <div class="mb-3">
-                            <input type="text" class="form-control" name="name" placeholder="Your Name" required>
+                            <input type="text" class="form-control" name="name" id="name" placeholder="Your Name" required>
                         </div>
                         <div class="mb-3">
-                            <input type="email" class="form-control" name="email" placeholder="Your Email" required>
+                            <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" required>
                         </div>
                         <div class="mb-3">
-                            <input type="text" class="form-control" name="subject" placeholder="Subject" required>
+                            <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
                         </div>
                         <div class="mb-3">
-                            <textarea class="form-control" name="message" rows="5" placeholder="Your Message" required></textarea>
+                            <textarea class="form-control" name="message" id="message" rows="5" placeholder="Your Message" required></textarea>
                         </div>
-                        <button type="submit" class="submit-btn">
+                        <button type="submit" class="submit-btn" id="submit-btn">
+                            <span class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
                             <i class="fas fa-paper-plane me-2"></i>Send Message
                         </button>
                     </form>
@@ -266,5 +285,69 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("{{ config.EMAILJS_PUBLIC_KEY }}");
+        })();
+
+        let lastSubmitTime = 0;
+        const THROTTLE_TIME = 10000; // 10 seconds
+
+        function showToast(message, type = 'success') {
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: type === 'success' ? "#254D70" : "#dc3545",
+            }).showToast();
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const currentTime = Date.now();
+            if (currentTime - lastSubmitTime < THROTTLE_TIME) {
+                showToast("Please wait a moment before sending another message.", "error");
+                return false;
+            }
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+
+            const templateParams = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value,
+            };
+
+            try {
+                const response = await emailjs.send(
+                    "{{ config.EMAILJS_SERVICE_ID }}",
+                    "{{ config.EMAILJS_TEMPLATE_ID }}",
+                    templateParams
+                );
+
+                if (response.status === 200) {
+                    showToast("Message sent successfully! We'll get back to you soon.");
+                    document.getElementById('contact-form').reset();
+                    lastSubmitTime = currentTime;
+                } else {
+                    throw new Error('Failed to send message');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast("Failed to send message. Please try again later.", "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+            }
+
+            return false;
+        }
+    </script>
 </body>
 </html> 
